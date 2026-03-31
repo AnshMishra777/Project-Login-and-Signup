@@ -11,34 +11,35 @@ const Login = () => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+    const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
+  try {
+    const res = await fetch("http://localhost:6969/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
 
-    if (!form.email || !form.password) {
-      setError("Please fill in both email and password.");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message);
       return;
     }
 
-    const savedUser = JSON.parse(localStorage.getItem("auth_demo_user") || "null");
+    localStorage.setItem("user", JSON.stringify(data.user));
 
-    if (!savedUser) {
-      setError("No account found. Please sign up first.");
-      return;
-    }
+    navigate("/leetcode"); // 🔥 redirect
 
-    if (savedUser.email !== form.email || savedUser.password !== form.password) {
-      setError("Invalid email or password.");
-      return;
-    }
-
-    setSuccess(`Welcome back, ${savedUser.name || "User"}!`);
-    setTimeout(() => {
-      navigate("/signin");
-    }, 900);
-  };
+  } catch (err) {
+    setError("Server error");
+  }
+};
+ 
 
   return (
     <div className="min-h-screen w-screen px-4 py-8 flex justify-center items-center bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200">

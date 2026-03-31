@@ -15,41 +15,46 @@ const Signin = () => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+    const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setError("");
+  if (form.password !== form.confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
 
-    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    localStorage.setItem(
-      "auth_demo_user",
-      JSON.stringify({
-        name: form.name.trim(),
-        email: form.email.trim(),
+  try {
+    const res = await fetch("http://localhost:6969/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
         password: form.password,
-      })
-    );
+      }),
+    });
 
-    navigate("/");
-  };
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.message);
+      return;
+    }
+
+    navigate("/"); // back to login
+
+  } catch (err) {
+    setError("Server error");
+  }
+};
+ 
 
   return (
     <div className="min-h-screen w-screen px-4 py-8 flex justify-center items-center bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200">
-      <div className="w-full max-w-sm rounded-4xl bg-gradient-to-tr from-green-100 via-emerald-50 to-green-200 border border-green-200 shadow-2xl p-7">
+      <div className="w-full max-w-sm rounded-4xl bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200 border border-green-200 shadow-2xl p-7">
         <div className="mb-7 text-center">
           <h1 className="text-3xl font-bold text-blue-900">Sign Up</h1>
           <p className="mt-2 text-sm text-blue-800/80">Create your account</p>
