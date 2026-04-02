@@ -3,105 +3,137 @@ import Header from "../display/header";
 import Footer from "../display/footer";
 
 const LeetCodepage = () => {
-  
   const [username, setUsername] = useState("");
   const [data, setData] = useState(null);
-      const stats = data?.submitStats?.acSubmissionNum || [];
+  const [loading, setLoading] = useState(false);
 
-const easy = stats.find(item => item.difficulty === "Easy")?.count || 0;
-const medium = stats.find(item => item.difficulty === "Medium")?.count || 0;
-const hard = stats.find(item => item.difficulty === "Hard")?.count || 0;
- const fetchData = async () => {
-  try {
-    const res = await fetch(`http://localhost:6969/api/leetcode/${username}`);
-    const result = await res.json();
+  const fetchData = async () => {
+    setLoading(true); // 🔥 start loading
+    setData(null);
 
-    if (!res.ok) {
-      alert(result.message); // 🔥 show error
-      return;
+    try {
+      const res = await fetch(`https://leetcode-stats-api.herokuapp.com/${username}`);
+      const result = await res.json();
+
+      if (!res.ok || result.status === "error") {
+        alert("User not found");
+        setLoading(false);
+        return;
+      }
+
+      setData(result);
+    } catch (err) {
+      console.log(err);
+      alert("Something went wrong");
     }
 
-    setData(result);
-  } catch (err) {
-    console.log(err);
-  }
-};
+    setLoading(false); // 🔥 stop loading
+  };
+
+  // percentages
+  const easyPercent = data ? (data.easySolved / data.totalEasy) * 100 : 0;
+  const mediumPercent = data ? (data.mediumSolved / data.totalMedium) * 100 : 0;
+  const hardPercent = data ? (data.hardSolved / data.totalHard) * 100 : 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* HEADER */}
-      <Header data={data} />
+    <div className="min-h-screen flex flex-col bg-[#020617]">
+      <Header />
 
-      {/* BODY */}
-     <div className="flex-grow flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#020617] to-black text-white relative overflow-hidden">
+      <div className="flex-grow flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#020617] to-black text-white relative overflow-hidden">
 
-  {/* Glow effect */}
-  <div className="absolute w-[400px] h-[400px] bg-yellow-500/10 blur-3xl rounded-full top-20 left-20"></div>
+        {/* Glow */}
+        <div className="absolute w-[400px] h-[400px] bg-yellow-500/10 blur-3xl rounded-full top-20 left-20"></div>
 
-  {!data ? (
-    <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl text-center w-[380px]">
-      
-      <h2 className="text-2xl font-semibold mb-6 tracking-wide">
-        🚀 Track Your LeetCode Stats
-      </h2>
+        {!data && !loading && (
+          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl text-center w-[380px]">
+            <h2 className="text-2xl font-semibold mb-6">
+              🚀 Track Your LeetCode Stats
+            </h2>
 
-      <div className="flex gap-3">
-        <input
-          type="text"
-          placeholder="Enter username..."
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="flex-1 px-4 py-2 rounded-lg bg-black/40 border border-gray-600 focus:border-yellow-400 outline-none"
-        />
+            <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="Enter username..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg bg-black/40 border border-gray-600 outline-none"
+              />
 
-        <button
-          onClick={fetchData}
-          className="bg-yellow-500 px-4 py-2 rounded-lg text-black font-semibold hover:bg-yellow-400 transition"
-        >
-          Fetch
-        </button>
+              <button
+                onClick={fetchData}
+                className="bg-yellow-500 px-4 py-2 rounded-lg text-black font-semibold hover:bg-yellow-400 transition"
+              >
+                Fetch
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 🔥 LOADING UI */}
+        {loading && (
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-400">Fetching data...</p>
+          </div>
+        )}
+
+        {/* 🔥 RESULT */}
+        {data && !loading && (
+          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl text-center w-[400px]">
+
+            {/* Username */}
+            <h2 className="text-xl font-bold mb-2">{data.username}</h2>
+            <p className="text-gray-400 mb-6">
+              Total Solved: {data.totalSolved}
+            </p>
+
+            {/* Progress Bars */}
+            <div className="space-y-5">
+
+              {/* Easy */}
+              <div>
+                <p className="text-green-400 mb-1">
+                  Easy ({data.easySolved}/{data.totalEasy})
+                </p>
+                <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-400 transition-all duration-700"
+                    style={{ width: `${easyPercent}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Medium */}
+              <div>
+                <p className="text-yellow-400 mb-1">
+                  Medium ({data.mediumSolved}/{data.totalMedium})
+                </p>
+                <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-yellow-400 transition-all duration-700"
+                    style={{ width: `${mediumPercent}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {/* Hard */}
+              <div>
+                <p className="text-red-400 mb-1">
+                  Hard ({data.hardSolved}/{data.totalHard})
+                </p>
+                <div className="w-full h-4 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-400 transition-all duration-700"
+                    style={{ width: `${hardPercent}%` }}
+                  ></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  ) : (
-    <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl text-center w-[350px]">
 
-      {/* Avatar */}
-      <img
-        src={data?.avatar}
-        alt="avatar"
-        className="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-yellow-400 shadow-lg"
-      />
-
-      {/* Username */}
-      <h2 className="text-xl font-bold">{data?.username}</h2>
-      <p className="text-gray-400 text-sm mb-6">
-        Ranking: {data?.ranking}
-      </p>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        
-        <div className="bg-green-500/10 border border-green-400/20 p-3 rounded-lg hover:scale-105 transition">
-          <p className="text-green-400 font-semibold">Easy</p>
-          <p className="text-lg">{easy}</p>
-        </div>
-
-        <div className="bg-yellow-500/10 border border-yellow-400/20 p-3 rounded-lg hover:scale-105 transition">
-          <p className="text-yellow-400 font-semibold">Medium</p>
-          <p className="text-lg">{medium}</p>
-        </div>
-
-        <div className="bg-red-500/10 border border-red-400/20 p-3 rounded-lg hover:scale-105 transition">
-          <p className="text-red-400 font-semibold">Hard</p>
-          <p className="text-lg">{hard}</p>
-        </div>
-
-      </div>
-    </div>
-  )}
-</div>
-
-      {/* FOOTER */}
       <Footer />
     </div>
   );

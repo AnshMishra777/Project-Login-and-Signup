@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import Header from "../display/header";
+import Footer from "../display/footer";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 const Signin = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -15,6 +17,8 @@ const Signin = () => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
     const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");
@@ -51,100 +55,111 @@ const Signin = () => {
   }
 };
  
+return (
+  <div className="min-h-screen flex flex-col bg-[#020617]">
 
-  return (
-    <div className="min-h-screen w-screen px-4 py-8 flex justify-center items-center bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200">
-      <div className="w-full max-w-sm rounded-4xl bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200 border border-green-200 shadow-2xl p-7">
-        <div className="mb-7 text-center">
-          <h1 className="text-3xl font-bold text-blue-900">Sign Up</h1>
-          <p className="mt-2 text-sm text-blue-800/80">Create your account</p>
-        </div>
+    <Header />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-blue-900" htmlFor="name">
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Enter your name"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+    {/* CENTER SECTION */}
+    <div className="flex-grow flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#020617] to-black relative overflow-hidden">
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-blue-900" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+      {/* Glow */}
+      <div className="absolute w-[400px] h-[400px] bg-blue-500/10 blur-3xl rounded-full top-20 left-20"></div>
+      <div className="absolute w-[300px] h-[300px] bg-purple-500/10 blur-3xl rounded-full bottom-10 right-10"></div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-blue-900" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Minimum 6 characters"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+      {/* FORM */}
+      <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl w-[380px]">
+        {/* your form here */}
 
-          <div>
-            <label
-              className="mb-1.5 block text-sm font-medium text-blue-900"
-              htmlFor="confirmPassword"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              placeholder="Re-enter password"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+         <h1 className="text-2xl font-semibold text-center mb-6 tracking-wide text-white">
+    Create Account 🚀
+  </h1>
 
-          {error ? (
-            <p className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700">{error}</p>
-          ) : null}
+  <form onSubmit={handleSubmit} className="space-y-4">
 
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-blue-700 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 active:scale-[0.99]"
-          >
-            Create Account
-          </button>
-        </form>
+    <input
+      name="name"
+      type="text"
+      value={form.name}
+      onChange={handleChange}
+      placeholder="Full Name"
+      className="w-full px-4 py-2 rounded-lg bg-black/40 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 outline-none"
+    />
 
-        <p className="mt-6 text-center text-sm text-blue-900/85">
-          Already have an account?{" "}
-          <Link className="font-semibold text-blue-700 hover:text-blue-900" to="/">
-            Log in
-          </Link>
-        </p>
+    <input
+      name="email"
+      type="email"
+      value={form.email}
+      onChange={handleChange}
+      placeholder="Email"
+      className="w-full px-4 py-2 rounded-lg bg-black/40 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 outline-none"
+    />
+
+    <div className="relative">
+  <input
+    name="password"
+    type={showPassword ? "text" : "password"}
+    value={form.password}
+    onChange={handleChange}
+    placeholder="Password"
+    className="w-full px-4 py-2 pr-10 rounded-lg bg-black/40 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 outline-none"
+  />
+
+  <span
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white cursor-pointer"
+  >
+   {showPassword ?   <FaEye /> : <FaEyeSlash />}
+  </span>
+</div>
+
+   <div className="relative">
+  <input
+    name="confirmPassword"
+    type={showConfirm ? "text" : "password"}
+    value={form.confirmPassword}
+    onChange={handleChange}
+    placeholder="Confirm Password"
+    className="w-full px-4 py-2 pr-10 rounded-lg bg-black/40 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 outline-none"
+  />
+
+  <span
+    onClick={() => setShowConfirm(!showConfirm)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white cursor-pointer transition"
+  >
+    {showPassword ?   <FaEye /> : <FaEyeSlash />}
+  </span>
+</div>
+    
+
+    {error && (
+      <p className="text-red-400 text-sm">{error}</p>
+    )}
+
+    <button
+      type="submit"
+      className="w-full bg-blue-500 py-2 rounded-lg font-semibold text-white hover:bg-blue-400 transition active:scale-[0.98]"
+    >
+      Create Account
+    </button>
+  </form>
+
+  <p className="text-center text-sm text-gray-400 mt-4">
+    Already have an account?{" "}
+    <Link to="/" className="text-blue-400 hover:underline">
+      Login
+    </Link>
+  </p>
       </div>
+
     </div>
-  );
+
+    {/* ✅ Footer OUTSIDE */}
+    <Footer />
+
+  </div>
+);
+ 
 };
 
 export default Signin;

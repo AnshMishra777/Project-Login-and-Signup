@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import Header from "../display/header";
+import Footer from "../display/footer";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 const Login = () => {
+  const [showPassword, setShowPassword] = useState(false);
+const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -42,67 +46,72 @@ const Login = () => {
  
 
   return (
-    <div className="min-h-screen w-screen px-4 py-8 flex justify-center items-center bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200">
-      <div className="w-full max-w-sm rounded-4xl bg-linear-to-tr from-blue-100 via-sky-100 to-blue-200 border border-blue-200 shadow-2xl p-7">
-        <div className="mb-7 text-center">
-          <h1 className="text-3xl font-bold text-blue-900">Login</h1>
-          <p className="mt-2 text-sm text-blue-800/80">Access your account</p>
-        </div>
+    <div className="min-h-screen flex flex-col bg-[#020617]">
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-blue-900" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+   <Header/>
+    <div className="flex-grow flex flex-col items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#020617] to-black relative overflow-hidden">
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-blue-900" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full rounded-xl border border-blue-200 bg-white/90 px-3 py-2.5 text-sm text-blue-950 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
+      
+  {/* Glow Effects */}
+  <div className="absolute w-[400px] h-[400px] bg-blue-500/10 blur-3xl rounded-full top-20 left-20"></div>
+  <div className="absolute w-[300px] h-[300px] bg-purple-500/10 blur-3xl rounded-full bottom-10 right-10"></div>
+   
+      <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl w-[380px]">
 
-          {error ? (
-            <p className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700">{error}</p>
-          ) : null}
-          {success ? (
-            <p className="rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-700">{success}</p>
-          ) : null}
+  <h1 className="text-2xl font-semibold text-center mb-6 tracking-wide text-white">
+    Welcome Back 👋
+  </h1>
 
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-blue-700 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 active:scale-[0.99]"
-          >
-            Log In
-          </button>
-        </form>
+  <form onSubmit={handleSubmit} className="space-y-4">
 
-        <p className="mt-6 text-center text-sm text-blue-900/85">
-          Don't have an account?{" "}
-          <Link className="font-semibold text-blue-700 hover:text-blue-900" to="/signin">
-            Sign up
-          </Link>
-        </p>
-      </div>
+    <input
+      name="email"
+      type="email"
+      value={form.email}
+      onChange={handleChange}
+      placeholder="Email"
+      className="w-full px-4 py-2 rounded-lg bg-black/40 border border-gray-600 text-white focus:border-blue-400 outline-none"
+    />
+
+   <div className="relative">
+  <input
+    name="password"
+    type={showPassword ? "text" : "password"}
+    value={form.password}
+    onChange={handleChange}
+    placeholder="Password"
+    className="w-full px-4 py-2 pr-10 rounded-lg bg-black/40 border border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 outline-none"
+  />
+
+  <span
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white cursor-pointer transition"
+  >
+    {showPassword ?   <FaEye /> : <FaEyeSlash />}
+  </span>
+</div>
+
+    {error && (
+      <p className="text-red-400 text-sm">{error}</p>
+    )}
+
+    <button className="w-full bg-blue-500 py-2 rounded-lg font-semibold hover:bg-blue-400 transition">
+      Login
+    </button>
+  </form>
+
+  <p className="text-center text-sm text-gray-400 mt-4">
+    Don't have an account?{" "}
+    <Link to="/signin" className="text-blue-400 hover:underline">
+      Sign up
+    </Link>
+  </p>
+</div>
+
     </div>
+    <Footer/>
+     </div>
+   
   );
 };
 

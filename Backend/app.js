@@ -66,46 +66,24 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
+let cache = {};
 
 app.get("/api/leetcode/:username", async (req, res) => {
   try {
     const username = req.params.username;
 
-    const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}`);
-
-    const text = await response.text(); // ✅ read once only
-
-    console.log("API RESPONSE:", text);
-
-    // ❗ Handle rate limit
-    if (text.includes("Too many request")) {
-      return res.status(429).json({
-        message: "API limit reached. Try again later."
-      });
+    if (cache[username]) {
+      return res.json(cache[username]);
     }
 
-    const data = JSON.parse(text);
+    const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}`);
+    const data = await response.json();
+
+    cache[username] = data;
 
     res.json(data);
 
   } catch (err) {
-    console.error("LeetCode API Error:", err);
     res.status(500).json({ message: "Error fetching LeetCode data" });
   }
-});
-let cache = {};
-
-app.get("/api/leetcode/:username", async (req, res) => {
-  const username = req.params.username;
-
-  if (cache[username]) {
-    return res.json(cache[username]); // 🔥 use cached
-  }
-
-  const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}`);
-  const data = await response.json();
-
-  cache[username] = data;
-
-  res.json(data);
 });
